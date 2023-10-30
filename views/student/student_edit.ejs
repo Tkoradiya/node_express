@@ -62,17 +62,17 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
                             <table>
                                 <tr>
                                     <td>Department Id:</td>
-                                    <td><input type="text" placeholder="Enter Deparmentid" name="department_id" value="<%= db_rows_array[0].department_id %>" required> </td>
+                                    <td><input type="text" placeholder="Enter Deparmentid" name="dept_id" value="<%= db_rows_array[0].dept_id %>" required> </td>
                                     <select name="category_id" class="form-control">
                                         <% for (var i=0;i<db_rows_array.length;i++){ %>
-                                        <option value="<%= db_rows_array[i].department_id %>"><%= db_rows_array[i].department_name %>
+                                        <option value="<%= db_rows_array[i].dept_id %>"><%= db_rows_array[i].department_name %>
                                             <% } %>
                                         </option>
                                     </select>
                                 </tr>
                                 <tr>
                                     <td>First name:</td>
-                                    <td><input type="text" placeholder="Enter first name" name="first_name" value="<%= db_rows_array[0].first_name %>" required> </td>
+                                    <td><input type="text" placeholder="Enter first name" name="fname" value="<%= db_rows_array[0].fname %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>Middle Name:</td>
@@ -80,7 +80,7 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
                                 </tr>
                                 <tr>
                                     <td>Last Name:</td>
-                                    <td><input type="text" placeholder="Enter last name" name="last_name" value="<%= db_rows_array[0].last_name %>" required> </td>
+                                    <td><input type="text" placeholder="Enter last name" name="lname" value="<%= db_rows_array[0].lname %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>City:</td>

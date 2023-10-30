@@ -65,24 +65,21 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
 								<table>
 									<div class="form-group">
 										<label for="exampleInputPrice1">Deparment Id</label>
-										<select name="department_id" class="form-control">  
+										<select name="dept_id" class="form-control">  
 											<% for (var i=0;i<db_rows_array.length;i++){ %>
-											<option value="<%= db_rows_array[i].department_id %>"><%= db_rows_array[i].name %>
+											<option value="<%= db_rows_array[i].dept_id %>"><%= db_rows_array[i].name %>
 												<% } %>
 											</option>
 										</select>
 									</div> 
                                     <div class="form-group"> 
 										<label for="exampleInputName1">First Name</label> 
-										<input type="text" name="first_name" class="form-control" id="exampleInputName1" placeholder="Enter First Name" required>  
+										<input type="text" name="fname" class="form-control" id="exampleInputName1" placeholder="Enter First Name" required>  
 									</div> 
-                                    <div class="form-group">
-										<label for="exampleInputPrice1">Middle Name</label>
-										<input type="text" name="middle_name" class="form-control" id="exampleInputPrice1" placeholder="Enter Middle Name" required> 
-                                    </div> 
+                                
                                     <div class="form-group">
 										<label for="exampleInputPrice1">Last Name</label>
-										<input type="text" name="last_name" class="form-control" id="exampleInputPrice1" placeholder="Enter last Name" required> 
+										<input type="text" name="lname" class="form-control" id="exampleInputPrice1" placeholder="Enter last Name" required> 
                                     </div> 
                                     <div class="form-group">
 										<label for="exampleInputPrice1">City</label>
