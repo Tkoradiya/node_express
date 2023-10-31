@@ -29,59 +29,60 @@ router.post('/add',function(req, res){
     })
 });
   
-router.get('/display', function(req, res, next) {
-    connenction.run("select * from department", function(err, db_rows){
-      if(err) throw err;
-      console.log(db_rows);
-      res.render('department/department_display', {db_rows_array: db_rows});
-    })
+
+
+
+
+     router.get("/display", (req, res) => {
+      const sql = "SELECT * FROM department"
+      connenction.all(sql, [], (err, rows) => {
+        if (err) {
+          return console.error(err.message);
+        }console.log(rows);
+        res.render("department/department_display", { db_rows_array: rows });
+      });
+    });
+  
+
+  
+router.get("/delete/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE FROM department WHERE dept_id = ?";
+  connenction.run(sql, id, err => {
+    // if (err) ...
+    res.redirect("/department/display");
+  });
 });
   
-router.get('/delete/:id/', function(req,res,next){
-    var deleteid = req.params.id;
-    console.log("Delete is is:"+ deleteid);
-  
-    connenction.query("Delete from department where dept_id = ?", [deleteid], function(err,db_rows){
-      if(err) throw err;
-      console.log(db_rows);
-      console.log("Record Deleted");
-      res.redirect('/department/display');
-    })
-});
-  
-router.get('/show/:id/', function(req,res,next){
-    var showid = req.params.id;
-    console.log("Show id is:" + showid);
-  
-    connenction.query("Select * from department where dept_id = ?" , [showid], function(err, db_rows){
-      console.log(db_rows);
-      if(err) throw err;
-      res.render('department/department_show',{db_rows_array:db_rows});
-    })
-});
-  
-router.get('/edit/:id/',function(req,res,next){
-  console.log("Edit id is:" + req.params.id);
-  var dept_id = req.params.id;
-
-  connenction.query("Select * from department where dept_id = ?", [dept_id], function(err, db_rows){
-    if(err) throw error;
-    console.log(db_rows);
-    res.render('department/department_edit', {db_rows_array: db_rows});
-  })
+router.get("/show/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "Select * from department where dept_id = ?";
+  connenction.get(sql, id, (err, row) => {
+    // if (err) ...
+    res.render("department/department_show", { db_rows_array: row });
+  });
 });
 
-router.post('/edit/:id/', function(req,res,next){
-  console.log("Edit id is:" + req.params.id);
+router.get("/edit/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "Select * from department where dept_id = ?";
+  connenction.get(sql, id, (err, row) => {
+    // if (err) ...
+    res.render("department/department_edit", { db_rows_array: row });
+  });
+});
 
-  var departmentid = req.params.id;
 
-  var name = req.body.name;
 
-  connenction.query("Update department set dept_name = ? where dept_id = ?", [name, departmentid], function(err, respond){
-    if(err) throw err;
+
+router.post("/edit/:id", (req, res) => {
+  const id = req.params.id;
+  const book = [req.body.dept_name, id];
+  const sql = "UPDATE department SET dept_name = ? WHERE (dept_id = ?)";
+  connenction.run(sql, book, err => {
+    // if (err) ...
     res.redirect('/department/display');
-  })
+  });
 });
   
 module.exports = router;
