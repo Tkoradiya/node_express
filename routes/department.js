@@ -22,10 +22,8 @@ router.get('/add',function(req, res, next) {
 
 router.post('/add',function(req, res){
     console.log(req.body);
-    const mybodydata = {
-      name : req.body.name
-    }
-    connenction.run("insert into department set ?",mybodydata,function(err, result){
+    
+    connenction.run("insert into department(dept_name) VALUES (?) ",[req.body.name],function(err, result){
       if(err) throw err;
       res.render('department/department_add',{ success : 'Data inserted' });
     })
