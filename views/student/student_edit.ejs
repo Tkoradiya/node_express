@@ -58,45 +58,37 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
                             <div class="form-title">
                                 <h4>Student Edit Form :</h4>
                                 </div>
-						<form method="POST" action="/student/edit/<%= db_rows_array[0].student_id %>">
+						<form method="POST" action="/student/edit/<%= db_rows_array.student_id %>">
                             <table>
-                                <tr>
-                                    <td>Department Id:</td>
-                                    <td><input type="text" placeholder="Enter Deparmentid" name="dept_id" value="<%= db_rows_array[0].dept_id %>" required> </td>
-                                    <select name="category_id" class="form-control">
-                                        <% for (var i=0;i<db_rows_array.length;i++){ %>
-                                        <option value="<%= db_rows_array[i].dept_id %>"><%= db_rows_array[i].department_name %>
-                                            <% } %>
-                                        </option>
-                                    </select>
-                                </tr>
+                                
                                 <tr>
                                     <td>First name:</td>
-                                    <td><input type="text" placeholder="Enter first name" name="fname" value="<%= db_rows_array[0].fname %>" required> </td>
+                                    <td><input type="text" placeholder="Enter first name" name="fname" value="<%= db_rows_array.fname %>" required> </td>
                                 </tr>
-                                <tr>
-                                    <td>Middle Name:</td>
-                                    <td><input type="text" placeholder="Enter middle name" name="midddle_name" value="<%= db_rows_array[0].midddle_name %>" required> </td>
-                                </tr>
+                               
                                 <tr>
                                     <td>Last Name:</td>
-                                    <td><input type="text" placeholder="Enter last name" name="lname" value="<%= db_rows_array[0].lname %>" required> </td>
+                                    <td><input type="text" placeholder="Enter last name" name="lname" value="<%= db_rows_array.lname %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>City:</td>
-                                    <td><input type="text" placeholder="Enter city " name="city" value="<%= db_rows_array[0].city %>" required> </td>
+                                    <td><input type="text" placeholder="Enter city " name="city" value="<%= db_rows_array.city %>" required> </td>
+                                </tr>
+                                <tr>
+                                    <td>Age:</td>
+                                    <td><input type="number" placeholder="Enter age " name="age" value="<%= db_rows_array.age %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>Address:</td>
-                                    <td><input type="text" placeholder="Enter address" name="address" value="<%= db_rows_array[0].address %>" required> </td>
+                                    <td><input type="text" placeholder="Enter address" name="address" value="<%= db_rows_array.address %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>Email:</td>
-                                    <td><input type="email" placeholder="Enter email" name="email" value="<%= db_rows_array[0].email %>" required> </td>
+                                    <td><input type="email" placeholder="Enter email" name="email" value="<%= db_rows_array.email %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>Mobile:</td>
-                                    <td><input type="number" placeholder="Enter mobile" name="mobile" value="<%= db_rows_array[0].mobile %>" required> </td>
+                                    <td><input type="number" placeholder="Enter mobile" name="mobile" value="<%= db_rows_array.mobile_no %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>

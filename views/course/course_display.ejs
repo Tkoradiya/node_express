@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Department Display</title>
+<title>Course Display</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Glance Design Dashboard Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
@@ -53,23 +53,26 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
 		<div id="page-wrapper">
 			<div class="main-page">
 				<div class="tables">
-					<h2 class="title1">Department List</h2>
+					<h2 class="title1">Course List</h2>
 					<div class="panel-body widget-shadow">
 						<% if(db_rows_array.length>0) { %>	
 							<table class="table" border="1">
 								<tr>
-									<th>Department Id</th>
-									<th>Name</th>
-									<th>Action</th>
+									<th>Course Id</th>
+									<th>Course Name</th>
+									<th>Course Credit</th>
+                                    <th>Department id</th>
 								</tr>
 						<% for(var i=0; i<db_rows_array.length; i++) { %>
 							<tr>
-								<td><%= db_rows_array[i].dept_id %></td>
-								<td><%= db_rows_array[i].dept_name %></td>
+								<td><%= db_rows_array[i].course_id %></td>
+								<td><%= db_rows_array[i].course_name %></td>
+                                <td><%= db_rows_array[i].credit %></td>
+                                <td><%= db_rows_array[i].dept_id %></td>
 								<td>
-									<a href='/department/edit/<%= db_rows_array[i].dept_id %>'>Edit</a> |
-									<a href='/department/delete/<%= db_rows_array[i].dept_id %>'>Delete</a> |
-									<a href='/department/show/<%= db_rows_array[i].dept_id %>'>Show</a>
+									<a href='/course/edit/<%= db_rows_array[i].course_id %>'>Edit</a> |
+									<a href='/course/delete/<%= db_rows_array[i].course_id %>'>Delete</a> |
+									<a href='/course/show/<%= db_rows_array[i].course_id %>'>Show</a>
 								</td>
 							</tr>
 						<% } %>

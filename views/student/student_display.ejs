@@ -53,32 +53,35 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
 		<div id="page-wrapper">
 			<div class="main-page">
 				<div class="tables">
-					<h2 class="title1">Tables</h2>
+					<h2 class="title1">Student List</h2>
 					<div class="panel-body widget-shadow">
 						<% if(db_rows_array.length>0) { %>	
 							<table class="table" border="1">
 								<tr>
 									<th>Student Id</th>
-                                    <th>Department Id</th>
+									<th>Department</th>
+									<th>Course</th>
                                     <th>First Name</th>
-                                    <th>Middle Name</th>
                                     <th>Last Name</th>
                                     <th>City</th>
-                                    <th>Address</th>
+									<th>Age</th>
                                     <th>Email</th>
                                     <th>Mobile</th>
+									<th>Grade</th>
 									<th>Action</th>
 								</tr>
 						<% for(var i=0; i<db_rows_array.length;i++) { %>
 							<tr>
 								<td><%= db_rows_array[i].student_id %></td>
-								<td><%= db_rows_array[i].dept_id %></td>
+								<td><%= db_rows_array[i].dept_name %></td>
+								<td><%= db_rows_array[i].course_name %></td>
                                 <td><%= db_rows_array[i].fname %></td>
 								<td><%= db_rows_array[i].lname %></td>
 								<td><%= db_rows_array[i].city %></td>
-                                <td><%= db_rows_array[i].address %></td>
+								<td><%= db_rows_array[i].age %></td>
                                 <td><%= db_rows_array[i].email %></td>
-                                <td><%= db_rows_array[i].mobile %></td>
+                                <td><%= db_rows_array[i].mobile_no %></td>
+								<td><%= db_rows_array[i].grade %></td>
 								<td>
 									<a href='/student/edit/<%= db_rows_array[i].student_id %>'>Edit</a> |
 									<a href='/student/delete/<%= db_rows_array[i].student_id %>'>Delete</a> |
