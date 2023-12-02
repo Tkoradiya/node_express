@@ -39,14 +39,10 @@ router.post('/add',function(req, res){
     }console.log(rows);
     res.render("course/course_add", { db_rows_array: rows ,success : 'Data inserted'});
   });
-     
     })
 });
   
 router.get('/display', function(req, res, next) {
-    
-
-
     const sql = "SELECT * FROM course"
     connenction.all(sql, [], (err, rows) => {
       if (err) {
@@ -77,9 +73,6 @@ router.get('/show/:id/', function(req,res,next){
 });
   
 router.get('/edit/:id/',function(req,res,next){
-  
-
-
   const id = req.params.id;
   const sql = "Select * from course where course_id = ?";
   connenction.get(sql, id, (err, row) => {
