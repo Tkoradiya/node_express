@@ -1,93 +1,171 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const { MongoClient, ObjectId } = require('mongodb');
 
-var sqlite3 = require('sqlite3'); 
 
-var connenction = new sqlite3.Database('./db/sqlite.db', sqlite3.OPEN_READWRITE, (err) => {
-  if(err) 
-  { 
-      console.log("Error Occurred - " + err.message); 
-  } 
-  else
-  { 
-      console.log("DataBase Connected"); 
-  } 
-}) 
+var app = express.Router();
 
-router.get('/add',function(req, res, next) {
-   
-  
-    res.render('student/student_add');
 
-  
+const client = new MongoClient('mongodb://127.0.0.1:27017/assignment4', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const databaseName = 'assignment4';
+const collectionName = 'student';
+
+
+app.use(express.json());
+
+app.get('/add',function(req, res, next) {
+  console.log("123");
+    res.render('student/student_add');    
 });
 
-router.post('/add',function(req, res){
-    console.log(req.body);
-    
-   
+// Route to store data in MongoDB
+app.post('/add', async (req, res) => {
+  try {
+    await client.connect();
+    console.log('Connected to the database');
 
-    connenction.run("insert into student(fname,lname,city,age,address,email,mobile_no) VALUES (?,?,?,?,?,?,?) ",[req.body.fname,req.body.lname,req.body.city,null,req.body.address,req.body.email,req.body.mobile],function(err, result){
-      if(err) throw err;
-      res.render('department/department_add',{ success : 'Data inserted' });
-    })
-});
-  
-router.get('/display', function(req, res, next) {
-    
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
 
+    // Data sent in the request body
+    const dataToInsert = req.body;
 
-    const sql = "SELECT student.*,course.course_name,department.dept_name,enrollment.grade FROM student JOIN enrollment ON student.student_id = enrollment.student_id JOIN course ON enrollment.course_id = course.course_id JOIN department on department.dept_id = course.dept_id"
-    connenction.all(sql, [], (err, rows) => {
-      if (err) {
-        return console.error(err.message);
-      }console.log(rows);
-      res.render("student/student_display", { db_rows_array: rows });
-    });
-});
-  
+    // Insert data into the collection
+    const result = await collection.insertOne(dataToInsert);
 
-router.get("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM student WHERE student_id = ?";
-  connenction.run(sql, id, err => {
-    // if (err) ...
-    console.log("Record Deleted");
+    //console.log(`Inserted ${result.insertedCount} document into the collection`);
     res.redirect("/student/display");
-  });
+    //res.status(201).send('Data stored successfully');
+  } catch (error) {
+    console.error('Error storing data:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+    console.log('Connection closed');
+  }
 });
-  
-router.get('/show/:id/', function(req,res,next){
+
+app.get('/display', async (req, res) => {
+  try {
+    // Connect to the database
+    await client.connect();
+    console.log('Connected to the database');
+
+    // Access the specific database and collection
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+
+    // Retrieve all documents from the collection
+    const cursor = collection.find();
+
+    // Convert cursor to array and send the data as JSON
+    const data = await cursor.toArray();
+    //res.json(data);
+    res.render("student/student_display", { db_rows_array: data });
+  } catch (error) {
+    console.error('Error connecting and retrieving data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    // Close the connection when done
+    await client.close();
+    console.log('Connection closed');
+  }
+});
+
+app.get('/edit/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName); 
+    const id = new ObjectId(req.params.id);
+   
+    // Find document by ID
+    const document = await collection.findOne({ _id: id });
+    // res.render("department/department_edit", { db_rows_array: document });
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    
+    //res.json(document);
+    res.render("student/student_edit", { db_rows_array: document });
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
+});
+
+
+app.post('/edit/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const id = new ObjectId(req.params.id);
+// Update the document by ID
+const result = await collection.updateOne({ _id: id },{ $set: {fname:req.body.fname,lname:req.body.lname,city:req.body.city,age:null,address:req.body.address,email:req.body.email,mobile:req.body.mobile}});
+res.redirect("/student/display");
+
+    //res.redirect('/success'); // Redirect to success page
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+  }
+});
+
+
+app.get('/show/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName); 
+    const id = new ObjectId(req.params.id);
+   
+    // Find document by ID
+    const document = await collection.findOne({ _id: id });
+    // res.render("department/department_edit", { db_rows_array: document });
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    //res.json(document);
+    res.render("student/student_show", { db_rows_array: document });
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
+});
+
+// Define a route to delete a document by ID
+app.get('/delete/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+
     const id = req.params.id;
-  const sql = "Select * from student where student_id = ?";
-  connenction.get(sql, id, (err, row) => {
-    // if (err) ...
-    res.render("student/student_show", { db_rows_array: row });
-  });
+
+    // Use ObjectId to convert the string ID to a MongoDB ObjectId
+    const objectId = new ObjectId(id);
+
+    const result = await collection.deleteOne({ _id: objectId });
+    res.redirect("/student/display");
+    /*if (result.deletedCount === 1) {
+      res.status(200).json({ message: 'Document deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Document not found' });
+    }*/
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    await client.close();
+  }
 });
-  
-router.get('/edit/:id/',function(req,res,next){
-  
 
-
-  const id = req.params.id;
-  const sql = "Select * from student where student_id = ?";
-  connenction.get(sql, id, (err, row) => {
-    // if (err) ...
-    res.render("student/student_edit", { db_rows_array: row });
-  });
-});
-
-router.post('/edit/:id/', function(req,res,next){
-  console.log("Edit id is:" + req.params.id);
-
-  const id = req.params.id;
-  const data = [req.body.fname,req.body.lname,req.body.city,req.body.address,null,req.body.email,req.body.mobile, id];
-  const sql = "UPDATE student SET fname = ?, lname = ?, city = ?, address = ?, age = ?, email = ?, mobile_no = ? WHERE (student_id = ?)";
-  connenction.run(sql, data, err => {
-    // if (err) ...
-    res.redirect('/student/display');
-  });
-});
-  
-module.exports = router;
+module.exports = app;

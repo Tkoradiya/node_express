@@ -58,7 +58,7 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
                             <div class="form-title">
                                 <h4>Student Edit Form :</h4>
                                 </div>
-						<form method="POST" action="/student/edit/<%= db_rows_array.student_id %>">
+						<form method="POST" action="/student/edit/<%= db_rows_array._id %>">
                             <table>
                                 
                                 <tr>
@@ -88,7 +88,7 @@ SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony
                                 </tr>
                                 <tr>
                                     <td>Mobile:</td>
-                                    <td><input type="number" placeholder="Enter mobile" name="mobile" value="<%= db_rows_array.mobile_no %>" required> </td>
+                                    <td><input type="number" placeholder="Enter mobile" name="mobile_no" value="<%= db_rows_array.mobile_no %>" required> </td>
                                 </tr>
                                 <tr>
                                     <td>

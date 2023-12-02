@@ -1,88 +1,176 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const { MongoClient, ObjectId } = require('mongodb');
 
-var sqlite3 = require('sqlite3'); 
 
-var connenction = new sqlite3.Database('./db/sqlite.db', sqlite3.OPEN_READWRITE, (err) => {
-  if(err) 
-  { 
-      console.log("Error Occurred - " + err.message); 
-  } 
-  else
-  { 
-      console.log("DataBase Connected"); 
-  } 
-}) 
+var app = express.Router();
 
-router.get('/add',function(req, res, next) {
+
+const client = new MongoClient('mongodb://127.0.0.1:27017/assignment4', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const databaseName = 'assignment4';
+const collectionName = 'department';
+
+
+app.use(express.json());
+
+app.get('/add',function(req, res, next) {
   console.log("123");
     res.render('department/department_add');
     
   });
 
-router.post('/add',function(req, res){
-    console.log(req.body);
-    
-    connenction.run("insert into department(dept_name) VALUES (?) ",[req.body.name],function(err, result){
-      if(err) throw err;
-      res.render('department/department_add',{ success : 'Data inserted' });
-    })
-});
-  
+// Route to store data in MongoDB
+app.post('/add', async (req, res) => {
+  try {
+    await client.connect();
+    console.log('Connected to the database');
 
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
 
+    // Data sent in the request body
+    const dataToInsert = req.body;
 
-
-     router.get("/display", (req, res) => {
-      const sql = "SELECT * FROM department"
-      connenction.all(sql, [], (err, rows) => {
-        if (err) {
-          return console.error(err.message);
-        }console.log(rows);
-        res.render("department/department_display", { db_rows_array: rows });
-      });
-    });
-  
-
-  
-router.get("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM department WHERE dept_id = ?";
-  connenction.run(sql, id, err => {
-    // if (err) ...
+    // Insert data into the collection
+    const result = await collection.insertOne(dataToInsert);
     res.redirect("/department/display");
-  });
-});
-  
-router.get("/show/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "Select * from department where dept_id = ?";
-  connenction.get(sql, id, (err, row) => {
-    // if (err) ...
-    res.render("department/department_show", { db_rows_array: row });
-  });
-});
+    //console.log(`Inserted ${result.insertedCount} document into the collection`);
 
-router.get("/edit/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "Select * from department where dept_id = ?";
-  connenction.get(sql, id, (err, row) => {
-    // if (err) ...
-    res.render("department/department_edit", { db_rows_array: row });
-  });
+    //res.status(201).send('Data stored successfully');
+  } catch (error) {
+    console.error('Error storing data:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+    console.log('Connection closed');
+  }
 });
 
+app.get('/display', async (req, res) => {
+  try {
+    // Connect to the database
+    await client.connect();
+    console.log('Connected to the database');
 
+    // Access the specific database and collection
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
 
+    // Retrieve all documents from the collection
+    const cursor = collection.find();
 
-router.post("/edit/:id", (req, res) => {
-  const id = req.params.id;
-  const book = [req.body.dept_name, id];
-  const sql = "UPDATE department SET dept_name = ? WHERE (dept_id = ?)";
-  connenction.run(sql, book, err => {
-    // if (err) ...
-    res.redirect('/department/display');
-  });
+    // Convert cursor to array and send the data as JSON
+    const data = await cursor.toArray();
+    //res.json(data);
+    res.render("department/department_display", { db_rows_array: data });
+  } catch (error) {
+    console.error('Error connecting and retrieving data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    // Close the connection when done
+    await client.close();
+    console.log('Connection closed');
+  }
 });
-  
-module.exports = router;
+
+app.get('/edit/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName); 
+    const id = new ObjectId(req.params.id);
+   
+    // Find document by ID
+    const document = await collection.findOne({ _id: id });
+    // res.render("department/department_edit", { db_rows_array: document });
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    
+    //res.json(document);
+    res.render("department/department_edit", { db_rows_array: document });
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
+});
+
+app.post('/edit/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const id = new ObjectId(req.params.id);
+    // Extract data from the request body
+   
+    console.log(req.body.dept_name);
+// Update the document by ID
+const result = await collection.updateOne({ _id: id },{ $set: {dept_name:req.body.dept_name}});
+res.redirect("/department/display");
+
+    //res.redirect('/success'); // Redirect to success page
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+  }
+});
+
+
+app.get('/show/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName); 
+    const id = new ObjectId(req.params.id);
+   
+    // Find document by ID
+    const document = await collection.findOne({ _id: id });
+    // res.render("department/department_edit", { db_rows_array: document });
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    //res.json(document);
+    res.render("department/department_show", { db_rows_array: document });
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await client.close();
+  }
+});
+
+
+// Define a route to delete a document by ID
+app.get('/delete/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+
+    const id = req.params.id;
+
+    // Use ObjectId to convert the string ID to a MongoDB ObjectId
+    const objectId = new ObjectId(id);
+
+    const result = await collection.deleteOne({ _id: objectId });
+    res.redirect("/department/display");
+    /*if (result.deletedCount === 1) {
+      res.status(200).json({ message: 'Document deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Document not found' });
+    }*/
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    await client.close();
+  }
+});
+
+
+module.exports = app;
